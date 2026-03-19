@@ -1,0 +1,14 @@
+# Adicione as dependências do projeto abaixo
+numpy
+pandas
+opencv-python
+scikit-image
+scikit-learn
+matplotlib
+seaborn
+
+# Sugestões (descomente se for usar):
+# torch
+# tensorflow
+# albumentations
+# torchvision
