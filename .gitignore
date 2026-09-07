@@ -1,3 +1,7 @@
 *.pth
 images/
-*.pth
+results/
+bkp/
+__pycache__/
+*.ipynb_checkpoints/
+.DS_Store
