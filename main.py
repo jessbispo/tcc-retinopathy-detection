@@ -27,7 +27,7 @@ def main():
     dl_treino, dl_val, dl_teste = get_dataloaders(df_treino, df_val, df_teste, PASTA_IMAGENS, batch_size=batch_size)
     
     # 2. Configurar Grid Search para vários modelos
-    model_names = ['resnet18', 'efficientnet_b0', 'vit_base_patch16_224'] # Pode adicionar 'vit_base_patch16_224'
+    model_names = ['resnet18', 'efficientnet_b0', 'mobilenetv3_large_100', 'vit_base_patch16_224'] # Pode adicionar 'vit_base_patch16_224'
     params_grid = {
         'lr': [1e-4, 5e-5],
         'weight_decay': [1e-4]
