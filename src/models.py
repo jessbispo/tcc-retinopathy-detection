@@ -21,7 +21,7 @@ def get_target_layer(model, model_name):
     elif 'efficientnet' in model_name:
         return model.conv_head
     elif 'mobilenet' in model_name:
-        return model.features[-1]
+        return model.blocks[-1]
     else:
         print(f"Aviso: Camada alvo para GradCAM não mapeada para {model_name}.")
         return None
