@@ -1,6 +1,31 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from sklearn.metrics import cohen_kappa_score, accuracy_score
+
+def pseudo_dice_loss(preds, targets, smooth=1.0):
+    """
+    Dice loss adapted for ordinal scalars (0 to 4).
+    Normalizes the values to [0, 1] to calculate overlap.
+    """
+    preds_norm = torch.clamp(preds, 0, 4) / 4.0
+    targets_norm = targets / 4.0
+    
+    num = 2.0 * (preds_norm * targets_norm).sum() + smooth
+    den = preds_norm.sum() + targets_norm.sum() + smooth
+    return 1.0 - num / den
+
+class CombinedMSEDiceLoss(nn.Module):
+    def __init__(self, mse_weight=0.5):
+        super().__init__()
+        self.mse_weight = mse_weight
+        self.mse = nn.MSELoss(reduction='mean')
+        
+    def forward(self, preds, targets):
+        mse_loss = self.mse(preds, targets)
+        dice_loss = pseudo_dice_loss(preds, targets)
+        return self.mse_weight * mse_loss + (1.0 - self.mse_weight) * dice_loss
+
 
 def evaluate_model(model, loader, device, criterion):
     model.eval()
@@ -56,7 +81,8 @@ def grid_search(model_name, get_model_fn, dl_treino, dl_val, device, params_grid
         
         modelo = get_model_fn(model_name).to(device)
         otimizador = torch.optim.AdamW(modelo.parameters(), lr=params['lr'], weight_decay=params.get('weight_decay', 0))
-        criterio = nn.MSELoss(reduction='mean')
+        # Utilizando a função de perda combinada (MSE + Dice)
+        criterio = CombinedMSEDiceLoss(mse_weight=0.5)
         
         melhor_qwk_local = -1
         
